@@ -1,5 +1,5 @@
 """
-This is the listener to which the module boilerplate would POST to.
+This is the listener to which the module signal-timer would POST to.
 The data received by the listener is written to json file.
 """
 
@@ -21,12 +21,14 @@ def request_handler():
     with open(output_file, "w") as outfile:
         outfile.write(received_data)
 
+
 def teardown_and_exit(*args):
     del args
     output_file = getenv("OUTPUT_FILE")
     if path.exists(output_file):
         remove(output_file)
     exit(0)
+
 
 if __name__ == "__main__":
     signal(SIGTERM, teardown_and_exit)

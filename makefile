@@ -1,6 +1,6 @@
 SHELL := /bin/bash # to enable source command in run_app
 
-MODULE=weevenetwork/boilerplate
+MODULE=weevenetwork/signal-timer
 VERSION_NAME=v1.0.0
 
 install_dev:
@@ -13,7 +13,7 @@ lint:
 .phony: lint
 
 run_app:
-	set -a && source .env && set +a && python src/main.py
+	set -a && source .env && set +a && python3 src/main.py
 .phony: run_app
 
 create_image:
@@ -38,7 +38,7 @@ stop_docker_compose:
 
 run_test:
 	# For more verbose output you can add [-s] option
-	pytest test/boilerplate_test.py -v
+	pytest test/signal_timer_test.py -v
 .phony: run_test
 
 push_latest:

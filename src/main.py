@@ -5,10 +5,12 @@ Entrypoint file that sets up and starts REST API server for the module.
 from os import getenv
 from logging import getLogger
 from bottle import run
-from api import setup_logging
+from api.log import setup_logging
+from api.request_handler import request_handler
 
 setup_logging()
 log = getLogger("main")
+
 
 def main():
     log.info(
@@ -25,6 +27,7 @@ def main():
         port=getenv("INGRESS_PORT"),
         quiet=True,
     )
+
 
 if __name__ == "__main__":
     main()

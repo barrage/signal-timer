@@ -11,6 +11,7 @@ from logging import getLogger
 # set up logging
 log = getLogger("processing_thread")
 
+
 class ProcessingThread(Thread):
     def __init__(self, data_queue):
         super(ProcessingThread, self).__init__()
@@ -31,6 +32,7 @@ class ProcessingThread(Thread):
 
                 # send data to the next module
                 if processed_data:
+
                     send_error = send_data(processed_data)
 
                     if send_error:

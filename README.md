@@ -1,87 +1,32 @@
-# Python Processing Module Boilerplate
+# Signal Timer Python Processing Module
 
 |              |                                                                  |
 | ------------ | ---------------------------------------------------------------- |
-| name         | Python Processing Module Boilerplate                             |
+| name         | Python Signal Timer Processing module                            |
 | version      | v1.0.0                                                           |
-| GitHub       | [python-processing-module-boilerplate](https://github.com/weeve-modules/python-processing-module-boilerplate) |
-| authors      | Jakub Grzelak, Nithin Saai                                       |
+| GitHub       | [python-signal-timer-processing-module](https://github.com/barrage/signal-timer) |
+| authors      | Denis Pilon, Bruno Lipovac                                       |
 
 ***
 ## Table of Content
 
-- [Python Processing Module Boilerplate](#python-processing-module-boilerplate)
+- [Python Signal Timer Processing Module](#python-signal-timer-processing-module)
   - [Table of Content](#table-of-content)
   - [Description](#description)
-  - [Directory Structure](#directory-structure)
-    - [File Tree](#file-tree)
   - [Module Variables](#module-variables)
-  - [As a module developer](#as-a-module-developer)
   - [Module Testing](#module-testing)
   - [Dependencies](#dependencies)
 ***
 
 ## Description 
 
-This is a Python Processing Boilerplate module and it serves as a starting point for developers to build process modules for weeve platform and data services.
-Navigate to [As a module developer](#as-a-module-developer) to learn how to use this module. You can also explore our weeve documentation on [weeve Modules](https://docs.weeve.engineering/concepts/edge-applications/weeve-modules) and [module tutorials](https://docs.weeve.engineering/guides/how-to-create-a-weeve-module) to learn more details. 
-
-## Directory Structure
-
-Most important resources:
-
-| name              | description                                                                                            |
-| ----------------- | ------------------------------------------------------------------------------------------------------ |
-| src               | All source code related to the module (API and module code).                                           |
-| src/main.py       | Entry-point for the module.                                                                            |
-| src/api           | Code responsible for setting module's API and communication with weeve ecosystem.                      |
-| src/module        | Code related to the module's business logic. This is working directory for module developers.          |
-| docker            | All resources related to Docker (Dockerfile, docker-entrypoint.sh, docker-compose.yml).                |
-| test              | All resources related to automating testing of the module in development process.                      |
-| example.env       | Holds examples of environment variables for running the module.                                        |
-| requirements.txt  | A list of module dependencies.                                                                         |
-| Module.yaml       | Module's YAML file that is later used by weeve platform Data Service Designer                          |
-
-### File Tree
-
-```bash
-├── src
-│   ├── api
-│   │   ├── __init__.py
-│   │   ├── log.py # log configurations
-│   │   ├── processing_thread.py # a separate thread responsible for triggering data processing and sending to the next module
-│   │   ├── send_data.py # sends data to the next module
-│   │   └── request_handler.py # handles module's API and receives data from a previous module
-│   ├── module
-│   │   ├── main.py # [*] main logic for the module
-│   │   └── validator.py # [*] validation logic for incoming data
-│   └── main.py # module entrypoint
-├── docker
-│   ├── .dockerignore
-│   ├── docker-compose.yml
-│   ├── docker-entrypoint.sh
-│   └── Dockerfile
-├── test
-│   ├── assets
-│   │   ├── input.json # input data for tests (sample module input)
-│   │   └── expected_output.json # expected output data for tests (sample module output)
-│   ├── boilerplate_test.py # script handling module testing
-│   ├── docker-compose.test.yml
-│   ├── Dockerfile.listener # dockerfile for a container used to simulate egress endpoint
-│   ├── listener.py # script implementing egress endpoint
-│   └── test.env # environment variables for tests
-├── example.env # sample environment variables for the module
-├── Module.yaml # used by weeve platform to generate resource in Data Service Designer section
-├── makefile
-├── README.md
-├── example.README.md # README template for writing module documentation
-├── requirements_dev.txt # module dependencies for testing, used for building Docker image
-└── requirements.txt # module dependencies, used for building Docker image
-```
+This is a Python Processing module which is a basic signal duration timer. It monitors the input
+and starts a counter measuring the duration that the signal keeps or exceeds a certain
+value.
 
 ## Module Variables
 
-There are 5 module variables that are required by each module to correctly function within weeve ecosystem. In development, these variables can overridden for testing purposes. In production, these variables are set by weeve Agent.
+The following module configurations can be provided in a data service designer section on weeve platform:
 
 | Environment Variables | type   | Description                                       |
 | --------------------- | ------ | ------------------------------------------------- |
@@ -91,29 +36,12 @@ There are 5 module variables that are required by each module to correctly funct
 | INGRESS_HOST          | string | Host to which data will be received               |
 | INGRESS_PORT          | string | Port to which data will be received               |
 | EGRESS_URLS           | string | HTTP ReST endpoint for the next module            |
-
-## As a module developer
-
-RECOMMENDED:
-Make sure you have [virtual environment](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/)
-
-Install the dependencies with `make install_dev`
-
-A module developer needs to add all the configuration and business logic.
-
-All the module logic can be written in the module package in `src/module` directory.
-
-   * The files can me modified for the module
-      1. `module/validator.py`
-         * The function `data_validation` takes the JSON data received from the previous module.
-         * Incoming data can be validated here.
-         * Checks if data is of type permitted by a module (i.e. `dict` or `list`)>
-         * Checks if data contains required fields.
-         * Returns Error if data are not valid.
-      2. `module/module.py`
-         * The function `module_main` takes the JSON data received from the previous module.
-         * All the business logic about modules are written here.
-         * Returns processed data and error message.
+| INPUT_LABEL           | string | Label of the monitored signal e.g. temperature    |
+| TIMESTAMP             | string | Key of the input object to access the timestamp value |
+| CONDITION             | enum | Allowed conditions: `No condition`, `(==) equal to`, `(!=) not equal to`, `(>) greater than`, `(>=) greater than or equal to`, `(<) less than`, `(<=) less than or equal to` |
+| COMPARE_VALUE         | float  | Value to compare to in order to start the signal duration timing
+| OUTPUT_UNIT           | enum | Determines the conversion of the signal duration. Allowed units: `ms`, `s`, `min`, `hrs` |
+| OUTPUT_LABEL          | string | Label of the output object for the signal duration value e.g. `time_passed` | 
 
 ## Module Testing
 
@@ -131,3 +59,46 @@ The following are developer dependencies:
 * pytest
 * flake8
 * black
+
+## Input
+
+Input to this module is JSON body single object, key of the triggering value must be the same as the environment variable value specified in the module environment:
+
+Example of single object:
+
+
+```json
+{
+  "<INPUT_LABEL>": 15,
+  "timestamp": 1659527972657
+}
+```
+
+Example when INPUT_LABEL is set to `temperature`:
+
+```json
+{
+  "temperature": 15,
+  "timestamp": 1659527972657
+}
+```
+
+
+## Output
+Output of this module is an object containing signal duration in the unit of time specified by the module environment variable and a timestamp for tracking purposes:
+
+```json
+{
+  "<OUTPUT_LABEL>": 100,
+  "timestamp": 1659527972757
+}
+```
+
+Example when OUTPUT_LABEL is set to `signal_duration_in_seconds`:
+
+```json
+{
+  "signal_duration_in_seconds": 100,
+  "timestamp": 1659527972757
+}
+```
